@@ -1,0 +1,31 @@
+\documentclass[11pt]{article}
+\usepackage[a4paper, margin=2.2cm]{geometry}
+\usepackage{titlesec}
+
+% Body text: Abhaya Libre (uses AbhayaLibre-Regular.ttf / -Bold.ttf in this project)
+\usepackage[font=abhaya]{singlish}
+
+% Headings: Noto Sans Sinhala (uses NotoSansSinhala-Regular.ttf / -Bold.ttf)
+\newfontfamily\siheadfont{NotoSansSinhala}[
+  Extension=.ttf, UprightFont=*-Regular, BoldFont=*-Bold,
+  Script=Sinhala, Renderer=HarfBuzz, Scale=0.82]
+\titleformat{\section}{\Large\bfseries\siheadfont}{\thesection.}{0.5em}{}
+
+\linespread{1.15}
+\tolerance=2000 \emergencystretch=2em
+
+\begin{document}
+
+\section{\singlish{haezdinviima}}
+\singlish{mema lipiya \lat{singlish} paekeejaya bhaavithayen liyana ladhi.}
+
+\section{\singlish{saamaanya paaTaya}}
+\silipsum[1-2]
+
+\section{\singlish{dhevana kotasa}}
+\silipsum[3]
+
+\section{\singlish{kudaa paaTaya}}
+\silipsum*[4-5]
+
+\end{document}

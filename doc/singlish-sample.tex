@@ -1,0 +1,55 @@
+\documentclass[11pt]{article}
+\usepackage[margin=2.2cm]{geometry}
+\usepackage{xcolor}
+\usepackage[font=abhaya]{singlish}
+\usepackage{booktabs}
+\newcommand\demo[1]{\texttt{\detokenize{#1}} & \singlish{#1}}
+\title{The \texttt{singlish} package --- sample}
+\author{v0.1.0}
+\date{}
+\begin{document}
+\maketitle
+
+\section*{Inline: \texttt{\string\singlish\{...\}}}
+\begin{tabular}{ll}
+\toprule
+Input & Output \\
+\midrule
+\demo{mama} \\
+\demo{amma} \\
+\demo{shrii laxkaava} \\
+\demo{sixhala} \\
+\demo{vidhyaava} \\
+\demo{prashnaya} \\
+\demo{kSeethraya} \\
+\demo{Dhar^maya} \\
+\demo{sazda} \\
+\demo{nyaShtika bhauthika vidhyaava} \\
+\bottomrule
+\end{tabular}
+
+\section*{Commands and math pass through}
+\singlish{mama \textbf{nyaShtika} \textcolor{blue}{bhauthika vidhyaava} \lat{MESA} paavichchi karanavaa: $E = mc^2$.}
+
+\section*{The \texttt{singlishtext} environment}
+\begin{singlishtext}
+thaarakaa thula sidhu vana nyaShtika prathikriyaa magin
+\textbf{bhaara muuladhravya} nirmaaNaya vee. % (comment stays Latin)
+mehi $^{12}\mathrm{C} + {}^{4}\mathrm{He}$ prathikriyaava
+vaedhagath vee.
+\end{singlishtext}
+
+\section*{Fonts}
+\newcommand\fontrow[2]{\texttt{#2} & \singlishsetfont{#1}\singlish{shrii laxkaava -- nyaShtika bhauthika vidhyaava} & \singlishsetfont{#1}\textbf{\singlish{sixhala}}\\}
+\begin{tabular}{lll}
+\toprule
+Option & Regular & Bold \\
+\midrule
+\fontrow{abhaya}{abhaya}
+\fontrow{noto-sans}{noto-sans}
+\fontrow{noto-serif}{noto-serif}
+\fontrow{yaldevi}{yaldevi}
+\fontrow{gemunu}{gemunu}
+\bottomrule
+\end{tabular}
+\end{document}

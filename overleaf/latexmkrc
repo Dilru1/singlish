@@ -1,0 +1,4 @@
+# Makes Overleaf (and latexmk) compile this project with LuaLaTeX,
+# whatever the Compiler menu says. Required by the singlish package.
+$pdflatex = 'lualatex %O %S';
+$pdf_mode = 1;

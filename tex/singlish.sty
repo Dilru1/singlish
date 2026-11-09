@@ -1,0 +1,198 @@
+%% singlish.sty -- type Sinhala phonetically (Helakuru style) in LuaLaTeX
+%% Copyright (C) 2026 Dilruwan
+%%
+%% This work may be distributed and/or modified under the conditions of the
+%% LaTeX Project Public License, either version 1.3c of this license or any
+%% later version. The latest version of this license is in
+%%   https://www.latex-project.org/lppl.txt
+%%
+%% This work has the LPPL maintenance status `maintained'.
+%% The Current Maintainer of this work is Dilruwan.
+%% This work consists of the files singlish.sty and singlish.lua.
+\NeedsTeXFormat{LaTeX2e}[2022/06/01]
+\ProvidesPackage{singlish}[2026/11/09 v0.2.0 Phonetic Sinhala input for LuaLaTeX]
+
+\RequirePackage{iftex}
+\ifLuaTeX\else
+  % Wrong engine: report ONE clear error, then define harmless stand-ins so
+  % the rest of the document does not cascade into hundreds of errors.
+  \PackageError{singlish}
+    {This document must be compiled with LuaLaTeX.\MessageBreak
+     Overleaf: Menu -> Compiler -> LuaLaTeX, then Recompile}
+    {Phonetic input is done in Lua and cannot work with pdfLaTeX\MessageBreak
+     or XeLaTeX. Sinhala text is shown as [?] until you switch.}
+  \DeclareOption*{}\ProcessOptions\relax
+  \DeclareRobustCommand\singlish[1]{[?]}
+  \let\sing\singlish \let\singlishraw\singlish
+  \DeclareRobustCommand\lat[1]{#1}
+  \newcommand\singlishsetfont[2][]{}
+  \newcommand\singlishsetheadfont[2][]{}
+  \newcommand\singlishheading{}
+  \newcommand\singlishfont{}
+  \newenvironment{singlishtext}{\par[?]\par\setbox0\vbox\bgroup}{\egroup}
+  \NewDocumentCommand\silipsum{sO{}}{[?]}
+  \expandafter\endinput
+\fi
+\RequirePackage{fontspec}
+
+%% ---------------------------------------------------------------- options
+% Known fonts: short key, installed font name, file stem (Google Fonts static
+% files <stem>-Regular.ttf / <stem>-Bold.ttf) and a default scale chosen so the
+% Sinhala letters sit at a similar optical size next to Latin Modern (Sinhala
+% body height, e.g. of ස, ~0.50em). An explicit scale=<factor> overrides it.
+\def\singlish@knownfont#1#2#3#4{%
+  \@namedef{singlish@font@#1}{#2}%
+  \@namedef{singlish@file@#1}{#3}%
+  \@namedef{singlish@scale@#1}{#4}}
+\singlish@knownfont{noto-sans}{Noto Sans Sinhala}{NotoSansSinhala}{0.82}
+\singlish@knownfont{noto-serif}{Noto Serif Sinhala}{NotoSerifSinhala}{0.85}
+\singlish@knownfont{abhaya}{Abhaya Libre}{AbhayaLibre}{1.22}
+\singlish@knownfont{yaldevi}{Yaldevi}{Yaldevi}{0.75}
+\singlish@knownfont{gemunu}{Gemunu Libre}{GemunuLibre}{1.00}
+\singlish@knownfont{iskoola}{Iskoola Pota}{iskpota}{1}
+
+% ---- user options -------------------------------------------------------
+%   font      = body Sinhala font: a short name (abhaya, noto-sans, ...) or any
+%               installed font name / file name           (default noto-sans)
+%   headfont  = font for \title, \section, \subsection ... (default = font)
+%   scale     = size of body Sinhala relative to the default   (e.g. 1.1)
+%   headscale = the same for headings
+%   sinhalanames = use Sinhala for Contents, Figure, Table, References, ...
+% Short names first look for <Stem>-Regular.ttf / -Bold.ttf next to the
+% document (e.g. uploaded to Overleaf), then for the installed font.
+\def\singlish@fontkey{noto-sans}
+\let\singlish@headkey\@empty
+\let\singlish@scale\@empty
+\let\singlish@headscale\@empty
+\newif\ifsinglish@names
+\DeclareKeys[singlish]{
+  sinhalanames.if   = singlish@names,
+  sinhalanames.usage = load,
+  font.store       = \singlish@fontkey,
+  font.usage       = load,
+  fontname.store   = \singlish@fontkey,   % older name for font=
+  fontname.usage   = load,
+  headfont.store   = \singlish@headkey,
+  headfont.usage   = load,
+  scale.store      = \singlish@scale,
+  scale.usage      = load,
+  headscale.store  = \singlish@headscale,
+  headscale.usage  = load,
+}
+\ProcessKeyOptions[singlish]
+\ifx\singlish@headkey\@empty \let\singlish@headkey\singlish@fontkey \fi
+
+%% ---------------------------------------------------------------- fonts
+% \singlish@load{<family cs>}{<key or font name>}{<scale or empty>}{<fontspec opts>}
+\newcommand*\singlish@setfamily[3]{% #1 = family cs, #2 = font, #3 = options
+  \ifdefined#1\renewfontfamily#1{#2}[#3]\else\newfontfamily#1{#2}[#3]\fi}
+\newcommand*\singlish@load[4]{%
+  \def\singlish@target{#1}%
+  \edef\singlish@tmpscale{#3}%
+  \def\singlish@tmpopts{Script=Sinhala, Renderer=HarfBuzz, Ligatures=TeX}%
+  \ifcsname singlish@font@#2\endcsname
+    \ifx\singlish@tmpscale\@empty
+      \edef\singlish@tmpscale{\csname singlish@scale@#2\endcsname}%
+    \else  % user scale multiplies the font's built-in size correction
+      \edef\singlish@tmpscale{\fpeval{\singlish@tmpscale*\csname singlish@scale@#2\endcsname}}%
+    \fi
+    \edef\singlish@tmpfile{\csname singlish@file@#2\endcsname}%
+    \edef\singlish@tmpname{\csname singlish@font@#2\endcsname}%
+    \IfFileExists{\singlish@tmpfile-Regular.ttf}
+      {\IfFileExists{\singlish@tmpfile-Bold.ttf}
+         {\edef\singlish@tmpbold{BoldFont=*-Bold,}}{\def\singlish@tmpbold{}}%
+       \edef\singlish@tmpopts{\singlish@tmpopts, Extension=.ttf,
+         UprightFont=*-Regular, \singlish@tmpbold Scale=\singlish@tmpscale, #4}%
+       \expandafter\expandafter\expandafter\singlish@setfamily
+         \expandafter\singlish@target\expandafter{\singlish@tmpfile}{\singlish@tmpopts}}
+      {\singlish@loadname{#4}}%
+  \else
+    \ifx\singlish@tmpscale\@empty \def\singlish@tmpscale{1}\fi
+    \def\singlish@tmpname{#2}%
+    \singlish@loadname{#4}%
+  \fi}
+\newcommand*\singlish@loadname[1]{%
+  \IfFontExistsTF{\singlish@tmpname}
+    {\edef\singlish@tmpopts{\singlish@tmpopts, Scale=\singlish@tmpscale, #1}%
+     \expandafter\expandafter\expandafter\singlish@setfamily
+       \expandafter\singlish@target\expandafter{\singlish@tmpname}{\singlish@tmpopts}}
+    {\PackageWarning{singlish}{Font `\singlish@tmpname' not found.\MessageBreak
+       Install it, upload its .ttf files next to your\MessageBreak
+       document, or choose another font.\MessageBreak
+       Sinhala text will be missing}%
+     \expandafter\providecommand\singlish@target{}}}
+
+\singlish@load\singlishbodyfont{\singlish@fontkey}{\singlish@scale}{}
+\singlish@load\singlishheadfont{\singlish@headkey}{\singlish@headscale}{}
+
+% \singlishfont selects the heading font inside headings, the body font elsewhere
+\newif\ifsinglish@inhead
+\newcommand\singlishfont{%
+  \ifsinglish@inhead\singlishheadfont\else\singlishbodyfont\fi}
+
+% Headings: \section ... \subparagraph (via \@sect / \@ssect) and \maketitle
+\AddToHook{cmd/@sect/before}{\global\singlish@inheadtrue}
+\AddToHook{cmd/@sect/after}{\global\singlish@inheadfalse}
+\AddToHook{cmd/@ssect/before}{\global\singlish@inheadtrue}
+\AddToHook{cmd/@ssect/after}{\global\singlish@inheadfalse}
+\AddToHook{cmd/@maketitle/before}{\global\singlish@inheadtrue}
+\AddToHook{cmd/@maketitle/after}{\global\singlish@inheadfalse}
+% For custom heading styles (titlesec etc.) put \singlishheading in the format:
+\newcommand\singlishheading{\singlish@inheadtrue}
+
+% Sinhala names for the fixed English words LaTeX prints
+\ifsinglish@names
+  \AtBeginDocument{%
+    \def\singlish@name#1#2{\ifdefined#1\def#1{\singlish{#2}}\fi}%
+    \singlish@name\contentsname{patuna}%
+    \singlish@name\listfigurename{ruupa laeyisthuva}%
+    \singlish@name\listtablename{vagu laeyisthuva}%
+    \singlish@name\figurename{ruupaya}%
+    \singlish@name\tablename{vaguva}%
+    \singlish@name\refname{aashritha granTha}%
+    \singlish@name\bibname{granTha naamaavaliya}%
+    \singlish@name\abstractname{saaraaxshaya}%
+    \singlish@name\chaptername{parichCeedhaya}%
+    \singlish@name\appendixname{upagranThaya}%
+    \singlish@name\partname{kotasa}%
+    \singlish@name\indexname{suuchiya}%
+    \singlish@name\pagename{pituva}}
+\fi
+
+% \singlishsetfont[<opts>]{<font>}     : change the body font mid-document
+% \singlishsetheadfont[<opts>]{<font>} : change the heading font
+\NewDocumentCommand\singlishsetfont{O{}m}{\singlish@load\singlishbodyfont{#2}{}{#1}}
+\NewDocumentCommand\singlishsetheadfont{O{}m}{\singlish@load\singlishheadfont{#2}{}{#1}}
+
+%% ---------------------------------------------------------------- Lua
+\directlua{singlish = require("singlish")}
+
+% \singlish{text} : transliterate and typeset in the Sinhala font
+\DeclareRobustCommand\singlish[1]{%
+  {\singlishfont
+   \directlua{singlish.print("\luaescapestring{\detokenize{#1}}")}}}
+\ProvideDocumentCommand\sing{}{\singlish}
+
+% \singlishraw{text} : transliterate only, no font change
+\DeclareRobustCommand\singlishraw[1]{%
+  \directlua{singlish.print("\luaescapestring{\detokenize{#1}}")}}
+
+% \lat{text} : Latin text inside Sinhala (left untransliterated)
+\DeclareRobustCommand\lat[1]{{\normalfont #1}}
+
+% singlishtext environment: every source line until \end{singlishtext}
+% is converted.
+% Start the text on the line after \begin{singlishtext}.
+\NewDocumentEnvironment{singlishtext}{}
+  {\par\singlishfont\directlua{singlish.start_env()}\ignorespaces}
+  {\par}
+
+% \silipsum[<n> or <a-b>] : Sinhala dummy text, like \lipsum (default 1-3).
+% \silipsum*[...]         : same text run together as one paragraph.
+% The words are meaningless by design; paragraph n is always the same.
+\NewDocumentCommand\silipsum{sO{1-3}}{%
+  \par{\singlishfont
+    \directlua{singlish.print_lipsum("\luaescapestring{#2}",
+                                     \IfBooleanTF{#1}{true}{false})}\par}}
+
+\endinput

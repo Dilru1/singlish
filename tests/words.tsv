@@ -1,0 +1,73 @@
+# input<TAB>expected output. Lines starting with # are ignored.
+# --- vowels
+mama	මම
+amaa	අමා
+aeta	ඇට
+Ata	ඇට
+kaeema	කෑම
+kAAma	කෑම
+ira	ඉර
+shrii	ශ්‍රී
+udhaya	උදය
+muuNa	මූණ
+eka	එක
+mee	මේ
+kaiya	කෛය
+oya	ඔය
+koo	කෝ
+kau	කෞ
+kRSi	කෘෂි
+a|e	අඑ
+# --- consonants
+kaKagaGa	කඛගඝ
+khagha	ඛඝ
+chaCaja	චඡජ
+chhaJajha	ඡඣඣ
+taTadaDaNa	ටඨඩඪණ
+thaThadhaDhana	තථදධන
+paPabaBama	පඵබභම
+phabha	ඵභ
+NgaNyaGNa	ඞඤඥ
+zgazjazDazdazba	ඟඦඬඳඹ
+yaralaLavawa	යරලළවව
+shaSaShasahafa	ශෂෂසහෆ
+agni	අග්නි
+nyaaya	න්‍යාය
+# --- special signs and conjuncts
+amma	අම්ම
+laxkaava	ලංකාව
+sixhala	සිංහල
+dhuHkha	දුඃඛ
+vidhyaava	විද්‍යාව
+prashnaya	ප්‍රශ්නය
+karmaya	කර්මය
+Dhar^maya	ධර්‍මය
+k^Sa	ක්‍ෂ
+k|ya	ක්ය
+k|ra	ක්ර
+sanda	සන්ඩ
+raya	රය
+# --- regression words from the spec
+oyaa	ඔයා
+thaaththaa	තාත්තා
+sazda	සඳ
+shrii laxkaava	ශ්‍රී ලංකාව
+kSeethraya	ක්ෂේත්‍රය
+vishvaya	විශ්වය
+thaarakaa	තාරකා
+shakthiya	ශක්තිය
+paramaaNuka	පරමාණුක
+nyaShtika	න්‍යෂ්ටික
+bhauthika vidhyaava	භෞතික විද්‍යාව
+# --- TeX pass-through
+mama \textbf{oyaa}	මම \textbf{ඔයා}
+$x^2$ mama	$x^2$ මම
+\(a+b\) mama	\(a+b\) මම
+\lat{MESA} mama	\lat{MESA} මම
+\cite[p.~3]{key} mama	\cite[p.~3]{key} මම
+\ref{fig:a} mama	\ref{fig:a} මම
+\textcolor{red}{mama}	\textcolor{red}{මම}
+mama, oyaa?	මම, ඔයා?
+2026 mama	2026 මම
+මම mama	මම මම
+mama % kaka	මම % kaka
