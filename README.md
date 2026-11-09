@@ -1,8 +1,8 @@
-# singlish — type Sinhala phonetically in LuaLaTeX
+# singlish — type සිංහල phonetically in LuaLaTeX
 
-Version 0.2.0 (2026-11-09) · LPPL 1.3c · **pre-release: the mapping may still change**
+Version 0.2.0 (2026-11-09) · LPPL 1.3c · **the mapping may still change**
 
-Write `\singlish{mama}` in your LaTeX source and get **මම** in the PDF, just like typing with Helakuru. The package converts Helakuru-style romanised ("Singlish") input to Sinhala Unicode and typesets it with a proper OpenType Sinhala font, with correct yansaya, rakaransaya, repaya and conjuncts.
+Write `\singlish{mama}` in LaTeX source and get **මම** in the PDF (just like typing with Helakuru). The package converts Helakuru-style romanised ("Singlish") input to Sinhala Unicode and typesets it with a proper OpenType Sinhala font.
 
 ```latex
 \documentclass{article}
@@ -63,9 +63,9 @@ TeX commands, math (`$...$`, `\(...\)`, `\[...\]`) and comments pass through unt
 | `font=iskoola` | Iskoola Pota (Windows only) | proprietary |
 | `font={Any Font}` | any installed Sinhala font | |
 
-Each known font is already scaled to sit well beside Latin text; `scale=` adjusts from there. Abhaya Libre and Noto Sans Sinhala (Regular and Bold, OFL) are included in [`fonts/`](fonts/). The others are free from [Google Fonts](https://fonts.google.com/?subset=sinhala).
+Each known font is already scaled to sit well beside Latin text (`scale=`). Abhaya Libre and Noto Sans Sinhala (Regular and Bold, OFL) are included in [`fonts/`](fonts/). The others are free from [Google Fonts](https://fonts.google.com/?subset=sinhala).
 
-For a known font, files next to your document are used first: with `font=abhaya`, the package looks for `AbhayaLibre-Regular.ttf` and `AbhayaLibre-Bold.ttf` in the project folder, then for an installed *Abhaya Libre*. File stems: `NotoSansSinhala`, `NotoSerifSinhala`, `AbhayaLibre`, `Yaldevi`, `GemunuLibre`.
+#For a known font, files next to your document are used first: with `font=abhaya`, the package #looks for `AbhayaLibre-Regular.ttf` and `AbhayaLibre-Bold.ttf` in the project folder, then for #an installed *Abhaya Libre*. File stems: `NotoSansSinhala`, `NotoSerifSinhala`, `AbhayaLibre`, #`Yaldevi`, `GemunuLibre`.
 
 ## Typing guide (summary)
 
@@ -113,4 +113,4 @@ When changing the mapping, add the affected words to `tests/words.tsv` first. Ne
 
 ## License
 
-Copyright © 2026 Dilruwan. This work may be distributed and/or modified under the conditions of the LaTeX Project Public License, version 1.3c or later. The fonts in `fonts/` are separate works distributed under the SIL Open Font License 1.1; their license files are next to them.
+Copyright © 2026 Dehiwalage Don Dilruwan. This work may be distributed and/or modified under the conditions of the LaTeX Project Public License version 1.3c or later. The fonts in `fonts/` are separate works distributed under the SIL Open Font License 1.1 and their license files are next to them.
